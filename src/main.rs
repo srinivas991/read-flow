@@ -15,7 +15,6 @@ extern crate flate2;
 mod aws;
 mod lib;
 
-
 #[derive(Eq, Hash, PartialEq, Debug)]
 struct Flow {
   Source: TrafficNode,
@@ -121,10 +120,13 @@ fn parse_file(file_name: &str) {
     st_entries.insert(j);
   }
 
+  let vv = [80,443,53,2020,8080,8181,9091,9100,9253,9256, 9620, 10249, 10250, 10256, 30081, 30082, 30083, 30084, 31002, 32081, 32082, 32083, 61678];
+
   // println!("{}", st_entries.len());
   for j in st_entries {
     let split_vec: Vec<String> = j.split(" ").map(|s| s.to_string()).collect();
-    if split_vec[4] == "80" || split_vec[4] == "443" {
+    let dst_port = split_vec[4].to_string().parse().unwrap();
+    if vv.contains(&dst_port) {
     let les = LogEntryStruct {
       source_ip: split_vec[0].to_string(),
       source_group: split_vec[1].to_string(),
