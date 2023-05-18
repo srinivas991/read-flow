@@ -138,7 +138,7 @@ pub fn get_sgs_on_ip<'a>(int_ip: &'a str, dat: &'a Root) -> Option<&'a Vec<Strin
   x.get(int_ip)
 }
 
-pub fn ip_allowed_in_sg(int_ip: &str, sg_id: &str, dat: &Root, sgs_vec: Option<&Vec<String>>) -> Option<String> {
+pub fn ip_allowed_in_sg(int_ip: &str, sg_id: &str, dat: &Root, sgs_vec: Option<&Vec<String>>) -> (Option<String>,Option<String>) {
   let x = &dat.security_groups.sgrules;
   let sgrules_vec_opt = x.get(sg_id);
 
@@ -150,7 +150,7 @@ pub fn ip_allowed_in_sg(int_ip: &str, sg_id: &str, dat: &Root, sgs_vec: Option<&
       if rule.rule.cidr_ipv4.is_some() {
         let source_ipv4 = rule.rule.cidr_ipv4.as_ref().unwrap();
         if is_this_ip_in_this_cidr(int_ip, &source_ipv4) {
-          return Some(rule.rule.security_group_rule_id.to_string());
+          return (Some(rule.rule.security_group_rule_id.to_string()), Some(source_ipv4.to_string()));
         }
       } else if rule.rule.referenced_group_info.is_some() {
         let source_sg = rule.rule.referenced_group_info.as_ref().unwrap();
@@ -160,7 +160,7 @@ pub fn ip_allowed_in_sg(int_ip: &str, sg_id: &str, dat: &Root, sgs_vec: Option<&
           let tmp = sgs_vec.unwrap();
           for j in tmp {
             if j.to_string() == source_sg_name {
-              return Some(rule.rule.security_group_rule_id.to_string());
+              return (Some(rule.rule.security_group_rule_id.to_string()), Some(source_sg_name.to_string()));
             }
           }
         }
@@ -168,7 +168,7 @@ pub fn ip_allowed_in_sg(int_ip: &str, sg_id: &str, dat: &Root, sgs_vec: Option<&
     }
   }
 
-  None
+  (None, None)
 }
 
 pub fn get_rules_from_sg<'a>(sg_id: &'a str, dat: &'a Root) -> Option<&'a Vec<SecurityGroupRule>> {
