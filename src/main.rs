@@ -61,7 +61,7 @@ impl LogEntryStruct {
       let (xyz,source) = aws::ip_allowed_in_sg(&self.source_ip, sg_id, dat, sgs_src);
       if source.is_some() {
         // let yy = format!("{} -> {}/{} -> {}", self.source_group, sg_id, xyz.unwrap(), self.destination_group);
-        let yy = format!("{} -> {}:{}", source.unwrap(), self.destination_group, self.destination_port);
+        let yy = format!("{} -> {}:{}", self.source_ip, self.destination_group, self.destination_port);
         st_final.insert(yy);
       }
     }
